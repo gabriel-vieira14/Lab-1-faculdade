@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include <stdio.h>
 
 int main()
@@ -19,4 +20,10 @@ int main()
         peso = (62.1 * altura) - 44.7;
     }
     printf("O peso ideal do paciente é:%f\n", peso);
+=======
+#include <stdio.h>
+
+int main()
+{
+>>>>>>> 5f7ad37 (mais alguns exercícios)
 }
