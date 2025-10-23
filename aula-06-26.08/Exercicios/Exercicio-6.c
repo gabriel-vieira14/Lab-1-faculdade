@@ -25,5 +25,4 @@ int main()
 
 int main()
 {
->>>>>>> 5f7ad37 (mais alguns exercícios)
 }
