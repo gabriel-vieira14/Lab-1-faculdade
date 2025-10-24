@@ -8,7 +8,7 @@ int main()
 
     printf("Digite o consumo da residência:\n");
     scanf("%f", &consumo);
-    if ((consumo > 100))
+    if (consumo > 100)
     {
         vl_conta = 7 + (20 * preco_11_30) + (70 * preco_31_100) + ((consumo - 100) * preco_101_mais);
     }
@@ -24,5 +24,5 @@ int main()
     {
         vl_conta = 7;
     }
-    printf("O valor da conta da sua conta é de R$ %.2f.", vl_conta);
+    printf("O valor da sua conta de água é de R$ %.2f.", vl_conta);
 }
