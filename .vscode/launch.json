@@ -23,8 +23,8 @@
             "logging": {
                 "engineLogging": false,
                 "moduleLoad": false,
-                "programOutput": true,
-                "exceptions": false
+                "programOutput": false,
+                "exceptions": false,
             }
         }
     ]
