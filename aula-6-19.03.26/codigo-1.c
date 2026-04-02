@@ -9,5 +9,5 @@ void impnum(int num) {
 }
 int main() {
     impnum(4526);
-
+//se tentarmos imprimir um número que tenha mais de 4 dígitos não vai dar certo
 }
