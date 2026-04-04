@@ -1,6 +1,5 @@
 #include <stdio.h>
-void impnum(int num)
-{
+void impnum(int num) {
     int pot = 10;
     while (pot <= num) {
         pot = pot * 10;
@@ -10,7 +9,12 @@ void impnum(int num)
         putchar('0' + num / pot % 10);
     }
 }
-int main() {
-    impnum(4526);
-    impnum(45268);
+int main()
+{
+   int n = 0;
+   while (n <= 100) {
+      impnum(n);
+      putchar('\n');
+      n = n + 1;
+   }
 }
