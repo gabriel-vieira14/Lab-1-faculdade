@@ -1,12 +1,14 @@
 #include <stdio.h>
-void imp_astericos(int n) {
+void linha(int n) {
     for(int i = 1;i <= n;i++) {
         putchar('*');
     }
     putchar('\n');
 }
 int main() {
-    imp_astericos(1);
-    imp_astericos(2);
-    imp_astericos(3);
+   int n = 1;
+    while (n < 4) {
+        linha(n);
+        n++;
+    }
 }
