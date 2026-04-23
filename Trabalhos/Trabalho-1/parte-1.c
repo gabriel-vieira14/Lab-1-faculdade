@@ -47,10 +47,13 @@ void testa_fatorial() {
     printf("%ld! = %Lf",n,res);
 
 }
-double conversao_graus_rad(double graus) {
+double conversao_graus_rad(double grau) {
     double radianos;
-    radianos = (graus * PI)/180;
+    radianos = (grau * PI)/180;
     return radianos;
+}
+double calcula_seno(double angulo) {
+    
 }
 double calcula_raiz(double x) {
     double chute,novo_chute, chute_abs, diferenca, diferenca_abs, raiz;
@@ -81,6 +84,9 @@ double calcula_raiz(double x) {
     }
     raiz = novo_chute; 
     return raiz;
+}
+void testa_raiz() {
+
 }
 int main() {
     testa_pot();
