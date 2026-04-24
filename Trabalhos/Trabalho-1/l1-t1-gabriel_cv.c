@@ -26,14 +26,12 @@ void testa_pot() {
     printf("Digite o número de potências que você quer calcular:\n");
     scanf("%d",&pot_max);
     resultado = pot(base, pot_max);
-    printf("%.2lf elevado a %d é: %.5lf\n", base, pot_max, resultado);
+    printf("%lf elevado a %d é: %lf\n", base, pot_max, resultado);
 }
-long double fatorial(long double n) {
-    long double mult=0;
-    long double fat;
-    while(mult != 0) {
-        fat = fat *  mult;
-        mult--;
+long double fatorial(long double n) {   
+    long double fat=1.0;
+    for(int i = 1; i <= n; i++) {
+        fat *= i;
     }
     return fat;
 }
@@ -43,10 +41,10 @@ void testa_fatorial() {
     printf("Digite o número que você quer calcular o fatorial:\n");
     scanf("%ld",&n);
     res = fatorial(n);
-    printf("%ld! = %Lf",n,res);
+    printf("%ld! = %Lf\n",n,res);
 
 }
-double abs(double termo){
+double vl_abs(double termo){
     double vl_absoluto;
     if(termo < 0.0) {
         vl_absoluto = -termo;
@@ -55,36 +53,35 @@ double abs(double termo){
     }
     return vl_absoluto;
 }
-double calcula_seno(double angulo) {
+double calcula_seno(double radianos) {
     double soma = 0.0, termo_soma_inv, termo_soma,termo_abs;
     int impar= 1, sinal  = 1;
     while(1) {
-        termo_soma = pot(angulo, impar)/fatorial(impar);
+        termo_soma = pot(radianos, impar)/fatorial(impar);
         termo_soma_inv = termo_soma * sinal;
-        soma += angulo + termo_soma_inv;
-        impar =+ 2;
+        soma += termo_soma_inv;
+        impar += 2;
         sinal *= -1;
-        termo_abs = abs(termo_soma_inv);
+        termo_abs = vl_abs(termo_soma);
         if(termo_abs < 1e-10) {
             break;
         }
     }
+    return soma;
 }
 void testa_seno() {
-    float angulo;
-    double seno;
-    printf("Digte um ângulo para calcular o seno dele:\n");
-    scanf("%f",&angulo);
-    calcula_seno(angulo);
-    printf("O seno(%f) é: %lf\n", angulo, seno);
+    double angulo,radianos, seno;
+    printf("Digite um ângulo em graus para calcular o seno dele:\n");
+    scanf("%lf",&angulo);
+    radianos = angulo * (PI / 180.0);
+    seno = calcula_seno(radianos);
+    printf("O seno(%.2f°) é: %lf\n", angulo, seno);
 }
 double calcula_raiz(double x) {
-    double chute,novo_chute, diferenca, raiz;
-    printf("Chute um valor:\n");
-    scanf("%lf", &chute);
-    if(chute <= 0) {
-        printf("Você chutou um número inválido! Chute apenas valores positivos diferentes de 0!\n");
-        scanf("%lf", &chute);    
+    double chute = x / 2.0;
+    double novo_chute, diferenca, raiz;
+    if (x == 0.0) {
+        return 0.0;
     }
     while(1)  {
         // aqui calcula a média 
@@ -92,7 +89,7 @@ double calcula_raiz(double x) {
         // diferença entre dois chutes sucessivos
         diferenca = novo_chute - chute;
         //condição de parada
-        if(abs(diferenca) < 1e-10) {
+        if(vl_abs(diferenca) < 1e-10) {
             break;
         }
         // pra a variável chute não rodar sempre com os mesmos números
@@ -108,11 +105,43 @@ void testa_raiz() {
     res = calcula_raiz(numero);
     printf("A raiz quadrada de %.2lf é: %.10lf\n", numero, res);  
 }
-
+double calcula_cosseno(double angulo) {
+    double seno,cosseno,seno_ao_quad, raiz_seno;
+    seno = calcula_seno(angulo);
+    seno_ao_quad = seno * seno;
+    raiz_seno = 1.0 - seno_ao_quad;
+    cosseno = calcula_raiz(raiz_seno);
+    return cosseno;
+}
+void testa_cosseno() {
+    double angulo, cosseno, radianos;
+    printf("Digte um ângulo em graus para calcular o cosseno dele:\n");
+    scanf("%lf",&angulo);
+    radianos = angulo * (PI / 180.0);
+    cosseno = calcula_cosseno(radianos);
+    printf("O cosseno de %.2lf é: %.5lf\n",angulo, cosseno);
+}
+void tabela_seno_cosseno() {
+    double cosseno,seno, radianos;
+    int angulo;
+    printf("ang   seno    cos   seno    cos   seno    cos   seno    cos   seno    cos \n"); 
+    for(int i = 0;i <= 89;i += 5) {
+        printf("%2d  ", i);
+        for(int j= 0;j < 5;j++) {
+            angulo = i + j;
+            radianos = angulo * (PI / 180.0);
+            seno = calcula_seno(radianos);
+            cosseno = calcula_cosseno(radianos);
+            printf(" %6.4lf %6.4lf", seno, cosseno);
+        }
+        printf("\n");
+    }
+}
 int main() {
-    testa_pot();
+    /*testa_pot();
     testa_fatorial();
     testa_raiz();
     testa_seno();
-
+    testa_cosseno();*/
+    tabela_seno_cosseno();
 }
