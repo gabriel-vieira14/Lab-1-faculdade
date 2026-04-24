@@ -28,12 +28,11 @@ void testa_pot() {
     resultado = pot(base, pot_max);
     printf("%.2lf elevado a %d é: %.5lf\n", base, pot_max, resultado);
 }
-double fatorial(int n) {
-    long int mult=0;
-    long double fat = 1;
-    mult = n;
+long double fatorial(long double n) {
+    long double mult=0;
+    long double fat;
     while(mult != 0) {
-        fat = fat * mult;
+        fat = fat *  mult;
         mult--;
     }
     return fat;
@@ -47,37 +46,54 @@ void testa_fatorial() {
     printf("%ld! = %Lf",n,res);
 
 }
-double conversao_graus_rad(double grau) {
-    double radianos;
-    radianos = (grau * PI)/180;
-    return radianos;
+double abs(double termo){
+    double vl_absoluto;
+    if(termo < 0.0) {
+        vl_absoluto = -termo;
+    } else {
+        vl_absoluto = termo;
+    }
+    return vl_absoluto;
 }
 double calcula_seno(double angulo) {
-    
+    double soma = 0.0, termo_soma_inv, termo_soma,termo_abs;
+    int impar= 1, sinal  = 1;
+    while(1) {
+        termo_soma = pot(angulo, impar)/fatorial(impar);
+        termo_soma_inv = termo_soma * sinal;
+        soma += angulo + termo_soma_inv;
+        impar =+ 2;
+        sinal *= -1;
+        termo_abs = abs(termo_soma_inv);
+        if(termo_abs < 1e-10) {
+            break;
+        }
+    }
+}
+void testa_seno() {
+    float angulo;
+    double seno;
+    printf("Digte um ângulo para calcular o seno dele:\n");
+    scanf("%f",&angulo);
+    calcula_seno(angulo);
+    printf("O seno(%f) é: %lf\n", angulo, seno);
 }
 double calcula_raiz(double x) {
-    double chute,novo_chute, chute_abs, diferenca, diferenca_abs, raiz;
-    int loop=1;
+    double chute,novo_chute, diferenca, raiz;
     printf("Chute um valor:\n");
     scanf("%lf", &chute);
     if(chute <= 0) {
         printf("Você chutou um número inválido! Chute apenas valores positivos diferentes de 0!\n");
         scanf("%lf", &chute);    
     }
-    while(loop == 1)  {
+    while(1)  {
         // aqui calcula a média 
         novo_chute = ((chute) + (x/chute)) / 2.0;
         // diferença entre dois chutes sucessivos
         diferenca = novo_chute - chute;
-        //valor absoluto da diferenca
-        if(diferenca < 0) {
-            diferenca_abs = -diferenca;
-        } else if(diferenca >= 0) {
-            diferenca_abs = diferenca;
-        }
         //condição de parada
-        if(diferenca_abs < 0.0000000001) {
-            loop = 0;
+        if(abs(diferenca) < 1e-10) {
+            break;
         }
         // pra a variável chute não rodar sempre com os mesmos números
         chute = novo_chute;
@@ -86,9 +102,17 @@ double calcula_raiz(double x) {
     return raiz;
 }
 void testa_raiz() {
-
+    double numero, res;
+    printf("Digite o número que você quer calcular a raiz quadrada:\n");
+    scanf("%lf", &numero);
+    res = calcula_raiz(numero);
+    printf("A raiz quadrada de %.2lf é: %.10lf\n", numero, res);  
 }
+
 int main() {
     testa_pot();
     testa_fatorial();
+    testa_raiz();
+    testa_seno();
+
 }
