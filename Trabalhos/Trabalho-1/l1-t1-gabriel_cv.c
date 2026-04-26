@@ -138,10 +138,10 @@ void tabela_seno_cosseno() {
     }
 }
 int main() {
-    /*testa_pot();
+    testa_pot();
     testa_fatorial();
     testa_raiz();
     testa_seno();
-    testa_cosseno();*/
+    testa_cosseno();
     tabela_seno_cosseno();
 }
