@@ -5,5 +5,6 @@ void imp_astericos(int n) {
     }
 }
 int main() {
-    imp_astericos(10);
+    imp_astericos(5);
+    putchar('\n');
 }

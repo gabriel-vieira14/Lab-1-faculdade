@@ -10,12 +10,14 @@ void espacos(int n) {
         putchar(' ');
     }
 }
+
+
 int main() {
-    int n = 4;
-    while (n > 0) {
+    int n = 1;
+    while (n <= 4) {
+        espacos(4-n);
         linha(n);
-        n--;
-        espacos(n);
         putchar('\n');
+        n++;
     }
 }

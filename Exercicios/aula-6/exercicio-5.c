@@ -13,11 +13,11 @@ void espacos(int n) {
 
 
 int main() {
-    int n = 1;
-    while (n <= 4) {
+    int n = 4;
+    while (n >= 1) {
         espacos(4-n);
         linha(n);
         putchar('\n');
-        n++;
+        n--;
     }
 }

@@ -1,6 +1,26 @@
 #include <stdio.h>
+void gatinho() {
+    puts("=^..^=");
+}
+void ratinho() {
+    puts("<:3)~~~");
+}
+void gatao() {
+    puts(" /\\_/\\");
+    puts("( o.o )");
+    puts(" > ^ <");
+}
+void ratao() {
+    puts(" _   _ ");
+    puts("(_)_(_)");
+    puts(" (o o) ");
+    puts("==\\o/==");
+    puts("   \"");
+}
 int main() {
-    for(int i = 1;i <= 10;i++) {
-        printf("%d\n", i);
-    }
+    gatinho();
+    ratinho();
+    gatao();
+    ratao();
+
 }

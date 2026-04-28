@@ -7,7 +7,7 @@ void linha(int n) {
 }
 int main() {
    int n = 1;
-    while (n < 4) {
+    while (n <= 3) {
         linha(n);
         n++;
     }
