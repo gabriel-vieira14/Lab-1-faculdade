@@ -175,7 +175,9 @@ void executa_modo_principal(GerenciadorApp *app) {
 
     switch ((int)tec) {
         case T_ESC: 
-            app->modo_atual = MODO_TERMINAR; 
+            app->texto_busca[0] = '\0'; 
+            app->cursor_texto_busca = 0;
+            app->modo_atual = MODO_PRINCIPAL; 
             break;
         case T_DIREITA: 
         case 'l':
@@ -299,6 +301,25 @@ void executa_modo_principal(GerenciadorApp *app) {
             }
             break;
         }
+        case 'i': 
+            if (app->indice_nota_corrente > 0) {
+                Nota nota_movida = app->vetor_notas[app->indice_nota_corrente];
+                for (int j = app->indice_nota_corrente; j > 0; j--) {
+                    app->vetor_notas[j] = app->vetor_notas[j - 1];
+                }
+                app->vetor_notas[0] = nota_movida;
+            }
+            break;
+
+        case 'f':
+            if (app->indice_nota_corrente != -1 && app->indice_nota_corrente < app->quantidade - 1) {
+                Nota nota_movida = app->vetor_notas[app->indice_nota_corrente];
+                for (int j = app->indice_nota_corrente; j < app->quantidade - 1; j++) {
+                    app->vetor_notas[j] = app->vetor_notas[j + 1];
+                }
+                app->vetor_notas[app->quantidade - 1] = nota_movida;
+            }
+            break;
         case 'n':
             if (app->quantidade >= app->capacidade) {
                 int nova_cap = app->capacidade + 5;
@@ -362,7 +383,6 @@ void executa_modo_principal(GerenciadorApp *app) {
             }
             break;
         }
-            break;
         case 'c': {
             if (app->indice_nota_corrente != -1) {
                 app->modo_atual = MODO_EDICAO_COR;
@@ -379,6 +399,13 @@ void executa_modo_principal(GerenciadorApp *app) {
             }
             break;
         }
+        case 'b': 
+            app->modo_atual = MODO_EDICAO_TEXTO_BUSCA;
+            break;
+            
+        case 'B': 
+            app->modo_atual = MODO_EDICAO_ETIQUETA_BUSCA;
+            break;
         default:
             break;
     }
