@@ -174,10 +174,9 @@ void executa_modo_principal(GerenciadorApp *app) {
     tecla_t tec = t_tecla();
 
     switch ((int)tec) {
-        case T_ESC:
+        case T_ESC: 
         case T_CTRL_C:
-            app->etiqueta_busca[0] = '\0';
-            app->modo_atual = MODO_PRINCIPAL;
+            app->modo_atual = MODO_TERMINAR; 
             break;
         case 'b': 
             app->modo_atual = MODO_EDICAO_TEXTO_BUSCA;
@@ -591,10 +590,12 @@ void executa_modo_busca_etiqueta(GerenciadorApp *app) {
     int len = strlen(app->etiqueta_busca);
     t_lincol(5, 21 + len);
     tecla_t tec = t_tecla();
-  switch ((int)tec) {
+    
+    switch ((int)tec) {
         case T_ESC:
-            app->etiqueta_busca[0] = '\0';
-            app->modo_atual = MODO_PRINCIPAL;
+        case T_CTRL_C:
+            app->etiqueta_busca[0] = '\0'; 
+            app->modo_atual = MODO_PRINCIPAL; 
             break;
         case T_ENTER:
             app->modo_atual = MODO_PRINCIPAL;
@@ -628,7 +629,10 @@ void executa_modo_busca_texto(GerenciadorApp *app) {
 
     switch ((int)tec) {
         case T_ESC: 
-            app->modo_atual = MODO_TERMINAR; 
+        case T_CTRL_C:
+            app->texto_busca[0] = '\0';
+            app->cursor_texto_busca = 0;
+            app->modo_atual = MODO_PRINCIPAL; 
             break;
         case T_ENTER: 
             app->modo_atual = MODO_PRINCIPAL; 
