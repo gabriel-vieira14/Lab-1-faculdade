@@ -14,7 +14,9 @@ typedef enum {
 } ModoOperacao;
 
 typedef struct {
-    int red, green, blue;
+    int red;
+    int green;
+    int blue;
 } Cor;
 
 typedef struct {
@@ -24,7 +26,7 @@ typedef struct {
 typedef struct {
     char etiqueta[4]; 
     Cor cor_retangulo;
-    Retangulo bounds;
+    Retangulo tam_retangulo;
     char texto[101];  
 } Nota;
 
@@ -68,7 +70,7 @@ void inicializa_e_le_arquivo(GerenciadorApp *app, const char *nome_arquivo) {
     Nota n;
     while (fscanf(arq, " %3s %d %d %d %d %d %d %d \"%100[^\"]\"%*[^\n]",
                   n.etiqueta, &n.cor_retangulo.red, &n.cor_retangulo.green, &n.cor_retangulo.blue,
-                  &n.bounds.x_inicial, &n.bounds.y_inicial, &n.bounds.tam_x, &n.bounds.tam_y, n.texto) == 9) {
+                  &n.tam_retangulo.x_inicial, &n.tam_retangulo.y_inicial, &n.tam_retangulo.tam_x, &n.tam_retangulo.tam_y, n.texto) == 9) {
         
         if (app->quantidade >= app->capacidade) {
             app->capacidade *= 2; 
@@ -83,10 +85,10 @@ void inicializa_e_le_arquivo(GerenciadorApp *app, const char *nome_arquivo) {
 void desenha_nota(Nota n) {
     int larg_tela, alt_tela;
     t_tamanho(&larg_tela, &alt_tela);
-    if (n.bounds.x_inicial > larg_tela || n.bounds.y_inicial > alt_tela) return;
-    int tam_x_visivel = n.bounds.tam_x;
-    if (n.bounds.x_inicial + n.bounds.tam_x - 1 > larg_tela) {
-        tam_x_visivel = larg_tela - n.bounds.x_inicial + 1;
+    if (n.tam_retangulo.x_inicial > larg_tela || n.tam_retangulo.y_inicial > alt_tela) return;
+    int tam_x_visivel = n.tam_retangulo.tam_x;
+    if (n.tam_retangulo.x_inicial + n.tam_retangulo.tam_x - 1 > larg_tela) {
+        tam_x_visivel = larg_tela - n.tam_retangulo.x_inicial + 1;
     }
     t_corfundo(n.cor_retangulo.red, n.cor_retangulo.green, n.cor_retangulo.blue);
     int media_cor = (n.cor_retangulo.red + n.cor_retangulo.green + n.cor_retangulo.blue) / 3;
@@ -95,25 +97,25 @@ void desenha_nota(Nota n) {
     } else {
         t_cortexto(0, 0, 0);
     }
-    for (int i = 0; i < n.bounds.tam_y; i++) {
-        int linha_atual = n.bounds.y_inicial + i;
+    for (int i = 0; i < n.tam_retangulo.tam_y; i++) {
+        int linha_atual = n.tam_retangulo.y_inicial + i;
         if (linha_atual > alt_tela) break; 
         
-        t_lincol(linha_atual, n.bounds.x_inicial);
+        t_lincol(linha_atual, n.tam_retangulo.x_inicial);
         printf("%*s", tam_x_visivel, "");
     }
-    t_lincol(n.bounds.y_inicial, n.bounds.x_inicial);
+    t_lincol(n.tam_retangulo.y_inicial, n.tam_retangulo.x_inicial);
     printf("%.*s", tam_x_visivel < 3 ? tam_x_visivel : 3, n.etiqueta);
     int len_texto = strlen(n.texto);
-    int altura_util = n.bounds.tam_y - 1; 
+    int altura_util = n.tam_retangulo.tam_y - 1; 
     int char_idx = 0; 
     
     for (int i = 0; i < altura_util && char_idx < len_texto; i++) {
-        int linha_atual = n.bounds.y_inicial + 1 + i;
+        int linha_atual = n.tam_retangulo.y_inicial + 1 + i;
         if (linha_atual > alt_tela) break; 
-        t_lincol(linha_atual, n.bounds.x_inicial); 
+        t_lincol(linha_atual, n.tam_retangulo.x_inicial); 
         printf("%.*s", tam_x_visivel, n.texto + char_idx);
-        char_idx += n.bounds.tam_x; 
+        char_idx += n.tam_retangulo.tam_x; 
     }
 }
 void grava_arquivo(GerenciadorApp *app, const char *nome_arquivo) {
@@ -124,7 +126,7 @@ void grava_arquivo(GerenciadorApp *app, const char *nome_arquivo) {
         Nota n = app->vetor_notas[i];
         fprintf(arq, "%s %d %d %d %d %d %d %d \"%s\"\n",
                 n.etiqueta, n.cor_retangulo.red, n.cor_retangulo.green, n.cor_retangulo.blue,
-                n.bounds.x_inicial, n.bounds.y_inicial, n.bounds.tam_x, n.bounds.tam_y,
+                n.tam_retangulo.x_inicial, n.tam_retangulo.y_inicial, n.tam_retangulo.tam_x, n.tam_retangulo.tam_y,
                 n.texto);
     }
     fclose(arq);
@@ -141,13 +143,13 @@ int nota_passa_filtro(GerenciadorApp *app, Nota n) {
 int obtem_indice_nota_corrente(GerenciadorApp *app) {
     for (int i = app->quantidade - 1; i >= 0; i--) {
         Nota n = app->vetor_notas[i];
-        if (app->cursor_x >= n.bounds.x_inicial && app->cursor_x < n.bounds.x_inicial + n.bounds.tam_x &&
-            app->cursor_y >= n.bounds.y_inicial && app->cursor_y < n.bounds.y_inicial + n.bounds.tam_y) {
+        if (app->cursor_x >= n.tam_retangulo.x_inicial && app->cursor_x < n.tam_retangulo.x_inicial + n.tam_retangulo.tam_x &&
+            app->cursor_y >= n.tam_retangulo.y_inicial && app->cursor_y < n.tam_retangulo.y_inicial + n.tam_retangulo.tam_y) {
             return i;
         }
         if (nota_passa_filtro(app, n)) { 
-            if (app->cursor_x >= n.bounds.x_inicial && app->cursor_x < n.bounds.x_inicial + n.bounds.tam_x &&
-                app->cursor_y >= n.bounds.y_inicial && app->cursor_y < n.bounds.y_inicial + n.bounds.tam_y) {
+            if (app->cursor_x >= n.tam_retangulo.x_inicial && app->cursor_x < n.tam_retangulo.x_inicial + n.tam_retangulo.tam_x &&
+                app->cursor_y >= n.tam_retangulo.y_inicial && app->cursor_y < n.tam_retangulo.y_inicial + n.tam_retangulo.tam_y) {
                 return i;
             }
         }
@@ -221,14 +223,14 @@ void executa_modo_principal(GerenciadorApp *app) {
             if (app->cursor_y > 1) app->cursor_y--; break;
         case T_S_DIREITA:
         case 'L':
-            if (app->indice_nota_corrente != -1) app->vetor_notas[app->indice_nota_corrente].bounds.x_inicial++;
+            if (app->indice_nota_corrente != -1) app->vetor_notas[app->indice_nota_corrente].tam_retangulo.x_inicial++;
             app->cursor_x++; break;
             
         case T_S_ESQUERDA:
         case 'H':
             if (app->indice_nota_corrente != -1) {
-                if (app->vetor_notas[app->indice_nota_corrente].bounds.x_inicial > 1) { 
-                    app->vetor_notas[app->indice_nota_corrente].bounds.x_inicial--;
+                if (app->vetor_notas[app->indice_nota_corrente].tam_retangulo.x_inicial > 1) { 
+                    app->vetor_notas[app->indice_nota_corrente].tam_retangulo.x_inicial--;
                     app->cursor_x--; 
                 }
             } else if (app->cursor_x > 1) {
@@ -238,14 +240,14 @@ void executa_modo_principal(GerenciadorApp *app) {
             
         case T_S_BAIXO:
         case 'J':
-            if (app->indice_nota_corrente != -1) app->vetor_notas[app->indice_nota_corrente].bounds.y_inicial++;
+            if (app->indice_nota_corrente != -1) app->vetor_notas[app->indice_nota_corrente].tam_retangulo.y_inicial++;
             app->cursor_y++; break;
             
         case T_S_CIMA:
         case 'K':
             if (app->indice_nota_corrente != -1) {
-                if (app->vetor_notas[app->indice_nota_corrente].bounds.y_inicial > 1) { 
-                    app->vetor_notas[app->indice_nota_corrente].bounds.y_inicial--;
+                if (app->vetor_notas[app->indice_nota_corrente].tam_retangulo.y_inicial > 1) { 
+                    app->vetor_notas[app->indice_nota_corrente].tam_retangulo.y_inicial--;
                     app->cursor_y--; 
                 }
             } else if (app->cursor_y > 1) {
@@ -254,20 +256,20 @@ void executa_modo_principal(GerenciadorApp *app) {
             break;
         case T_C_DIREITA:
         case T_CTRL_L:
-            if (app->indice_nota_corrente != -1) app->vetor_notas[app->indice_nota_corrente].bounds.tam_x++;
+            if (app->indice_nota_corrente != -1) app->vetor_notas[app->indice_nota_corrente].tam_retangulo.tam_x++;
             break;
             
         case T_C_BAIXO:
         case T_CTRL_J:
-            if (app->indice_nota_corrente != -1) app->vetor_notas[app->indice_nota_corrente].bounds.tam_y++;
+            if (app->indice_nota_corrente != -1) app->vetor_notas[app->indice_nota_corrente].tam_retangulo.tam_y++;
             break;
             
         case T_C_ESQUERDA:
         case T_CTRL_H:
             if (app->indice_nota_corrente != -1) {
-                if (app->vetor_notas[app->indice_nota_corrente].bounds.x_inicial > 1) {
-                    app->vetor_notas[app->indice_nota_corrente].bounds.x_inicial--;
-                    app->vetor_notas[app->indice_nota_corrente].bounds.tam_x++;
+                if (app->vetor_notas[app->indice_nota_corrente].tam_retangulo.x_inicial > 1) {
+                    app->vetor_notas[app->indice_nota_corrente].tam_retangulo.x_inicial--;
+                    app->vetor_notas[app->indice_nota_corrente].tam_retangulo.tam_x++;
                 }
             }
             break;
@@ -275,54 +277,54 @@ void executa_modo_principal(GerenciadorApp *app) {
         case T_C_CIMA: 
         case T_CTRL_K:
             if (app->indice_nota_corrente != -1) {
-                if (app->vetor_notas[app->indice_nota_corrente].bounds.y_inicial > 1) {
-                    app->vetor_notas[app->indice_nota_corrente].bounds.y_inicial--;
-                    app->vetor_notas[app->indice_nota_corrente].bounds.tam_y++;
+                if (app->vetor_notas[app->indice_nota_corrente].tam_retangulo.y_inicial > 1) {
+                    app->vetor_notas[app->indice_nota_corrente].tam_retangulo.y_inicial--;
+                    app->vetor_notas[app->indice_nota_corrente].tam_retangulo.tam_y++;
                 }
             }
             break;
         case T_SA_DIREITA:
         case T_A_DIREITA: 
         case T_CTRL_O:
-            if (app->indice_nota_corrente != -1 && app->vetor_notas[app->indice_nota_corrente].bounds.tam_x > 5) {
-                app->vetor_notas[app->indice_nota_corrente].bounds.x_inicial++;
-                app->vetor_notas[app->indice_nota_corrente].bounds.tam_x--;
-                if (app->cursor_x < app->vetor_notas[app->indice_nota_corrente].bounds.x_inicial) app->cursor_x++;
+            if (app->indice_nota_corrente != -1 && app->vetor_notas[app->indice_nota_corrente].tam_retangulo.tam_x > 5) {
+                app->vetor_notas[app->indice_nota_corrente].tam_retangulo.x_inicial++;
+                app->vetor_notas[app->indice_nota_corrente].tam_retangulo.tam_x--;
+                if (app->cursor_x < app->vetor_notas[app->indice_nota_corrente].tam_retangulo.x_inicial) app->cursor_x++;
             }
             break;
             
         case T_SA_ESQUERDA:
         case T_A_ESQUERDA: 
         case T_CTRL_Y:
-            if (app->indice_nota_corrente != -1 && app->vetor_notas[app->indice_nota_corrente].bounds.tam_x > 5) {
-                app->vetor_notas[app->indice_nota_corrente].bounds.tam_x--;
-                if (app->cursor_x >= app->vetor_notas[app->indice_nota_corrente].bounds.x_inicial + app->vetor_notas[app->indice_nota_corrente].bounds.tam_x) app->cursor_x--;
+            if (app->indice_nota_corrente != -1 && app->vetor_notas[app->indice_nota_corrente].tam_retangulo.tam_x > 5) {
+                app->vetor_notas[app->indice_nota_corrente].tam_retangulo.tam_x--;
+                if (app->cursor_x >= app->vetor_notas[app->indice_nota_corrente].tam_retangulo.x_inicial + app->vetor_notas[app->indice_nota_corrente].tam_retangulo.tam_x) app->cursor_x--;
             }
             break;
             
         case T_SA_BAIXO:
         case T_A_BAIXO: 
         case T_CTRL_U:
-            if (app->indice_nota_corrente != -1 && app->vetor_notas[app->indice_nota_corrente].bounds.tam_y > 3) {
-                app->vetor_notas[app->indice_nota_corrente].bounds.y_inicial++;
-                app->vetor_notas[app->indice_nota_corrente].bounds.tam_y--;
-                if (app->cursor_y < app->vetor_notas[app->indice_nota_corrente].bounds.y_inicial) app->cursor_y++;
+            if (app->indice_nota_corrente != -1 && app->vetor_notas[app->indice_nota_corrente].tam_retangulo.tam_y > 3) {
+                app->vetor_notas[app->indice_nota_corrente].tam_retangulo.y_inicial++;
+                app->vetor_notas[app->indice_nota_corrente].tam_retangulo.tam_y--;
+                if (app->cursor_y < app->vetor_notas[app->indice_nota_corrente].tam_retangulo.y_inicial) app->cursor_y++;
             }
             break;
             
         case T_SA_CIMA:
         case T_A_CIMA: 
         case T_CTRL_I:
-            if (app->indice_nota_corrente != -1 && app->vetor_notas[app->indice_nota_corrente].bounds.tam_y > 3) {
-                app->vetor_notas[app->indice_nota_corrente].bounds.tam_y--;
-                if (app->cursor_y >= app->vetor_notas[app->indice_nota_corrente].bounds.y_inicial + app->vetor_notas[app->indice_nota_corrente].bounds.tam_y) app->cursor_y--;
+            if (app->indice_nota_corrente != -1 && app->vetor_notas[app->indice_nota_corrente].tam_retangulo.tam_y > 3) {
+                app->vetor_notas[app->indice_nota_corrente].tam_retangulo.tam_y--;
+                if (app->cursor_y >= app->vetor_notas[app->indice_nota_corrente].tam_retangulo.y_inicial + app->vetor_notas[app->indice_nota_corrente].tam_retangulo.tam_y) app->cursor_y--;
             }
             break;
         case 'p': {
             if (app->quantidade > 0) {
                 Nota nota_topo = app->vetor_notas[app->quantidade - 1];
-                app->cursor_x = nota_topo.bounds.x_inicial + (nota_topo.bounds.tam_x / 2);
-                app->cursor_y = nota_topo.bounds.y_inicial + (nota_topo.bounds.tam_y / 2);
+                app->cursor_x = nota_topo.tam_retangulo.x_inicial + (nota_topo.tam_retangulo.tam_x / 2);
+                app->cursor_y = nota_topo.tam_retangulo.y_inicial + (nota_topo.tam_retangulo.tam_y / 2);
             }
             break;
         }
@@ -339,10 +341,10 @@ void executa_modo_principal(GerenciadorApp *app) {
             nova_nota.cor_retangulo.red = 220;
             nova_nota.cor_retangulo.green = 220;
             nova_nota.cor_retangulo.blue = 50;
-            nova_nota.bounds.x_inicial = app->cursor_x - 3;
-            nova_nota.bounds.y_inicial = app->cursor_y - 1;
-            nova_nota.bounds.tam_x = 14;
-            nova_nota.bounds.tam_y = 4;
+            nova_nota.tam_retangulo.x_inicial = app->cursor_x - 3;
+            nova_nota.tam_retangulo.y_inicial = app->cursor_y - 1;
+            nova_nota.tam_retangulo.tam_x = 14;
+            nova_nota.tam_retangulo.tam_y = 4;
             strcpy(nova_nota.texto, "Texto padrao");
             
             app->vetor_notas[app->quantidade] = nova_nota;
@@ -369,8 +371,8 @@ void executa_modo_principal(GerenciadorApp *app) {
                     app->vetor_notas = temp;
                     app->capacidade = nova_cap;
                 }
-                app->ultima_removida.bounds.x_inicial = app->cursor_x - 3;
-                app->ultima_removida.bounds.y_inicial = app->cursor_y - 1;
+                app->ultima_removida.tam_retangulo.x_inicial = app->cursor_x - 3;
+                app->ultima_removida.tam_retangulo.y_inicial = app->cursor_y - 1;
                 
                 app->vetor_notas[app->quantidade] = app->ultima_removida;
                 app->quantidade++;
